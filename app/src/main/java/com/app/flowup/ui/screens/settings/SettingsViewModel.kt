@@ -1,9 +1,13 @@
 package com.app.flowup.ui.screens.settings
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.flowup.data.preferences.PreferencesRepository
+import com.app.flowup.notifications.NotificationManager
+import com.app.flowup.service.SyncForegroundService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,7 +18,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val preferencesRepository: PreferencesRepository
+    @ApplicationContext private val context: Context,
+    private val preferencesRepository: PreferencesRepository,
+    private val notificationManager: NotificationManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
@@ -142,6 +148,42 @@ class SettingsViewModel @Inject constructor(
                 errorMessage = null,
                 successMessage = null
             )
+        }
+    }
+
+    /**
+     * Muestra una notificación de prueba para verificar permisos.
+     */
+    fun testNotification() {
+        if (notificationManager.hasPermission()) {
+            notificationManager.showTestNotification()
+            showSuccessMessage("Notificación enviada")
+        } else {
+            showErrorMessage("Permiso de notificaciones no concedido")
+        }
+    }
+
+    /**
+     * Inicia el servicio en primer plano.
+     */
+    fun startForegroundService() {
+        try {
+            SyncForegroundService.start(context)
+            showSuccessMessage("Servicio de sincronización iniciado")
+        } catch (e: Exception) {
+            showErrorMessage("Error al iniciar servicio: ${e.message}")
+        }
+    }
+
+    /**
+     * Detiene el servicio en primer plano.
+     */
+    fun stopForegroundService() {
+        try {
+            SyncForegroundService.stop(context)
+            showSuccessMessage("Servicio de sincronización detenido")
+        } catch (e: Exception) {
+            showErrorMessage("Error al detener servicio: ${e.message}")
         }
     }
 

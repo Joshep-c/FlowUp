@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.app.flowup.data.local.ActivityEntity
 import com.app.flowup.data.preferences.PreferencesRepository
 import com.app.flowup.data.repository.ActivityRepository
+import com.app.flowup.notifications.NotificationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: ActivityRepository,
-    private val preferencesRepository: PreferencesRepository
+    private val preferencesRepository: PreferencesRepository,
+    private val notificationManager: NotificationManager
 ) : ViewModel() {
 
     // Estado privado mutable (solo el ViewModel puede modificarlo)
@@ -76,23 +78,30 @@ class HomeViewModel @Inject constructor(
 
     /**
      * Marca una actividad como completada o no completada.
+     * Cancela la notificación si se completa.
      * @param activity La actividad a actualizar
      */
     fun toggleActivityCompletion(activity: ActivityEntity) {
         viewModelScope.launch {
-            repository.updateActivity(
-                activity.copy(isCompleted = !activity.isCompleted)
-            )
+            val updatedActivity = activity.copy(isCompleted = !activity.isCompleted)
+            repository.updateActivity(updatedActivity)
+
+            // Cancelar notificación si se marcó como completada
+            if (updatedActivity.isCompleted) {
+                notificationManager.cancelReminder(activity.id)
+            }
         }
     }
 
     /**
      * Elimina una actividad de la base de datos.
+     * Cancela su notificación programada.
      * @param activity La actividad a eliminar
      */
     fun deleteActivity(activity: ActivityEntity) {
         viewModelScope.launch {
             repository.deleteActivity(activity)
+            notificationManager.cancelReminder(activity.id)
         }
     }
 

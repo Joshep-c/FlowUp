@@ -109,6 +109,42 @@ private fun SettingsContent(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedButton(
+                    onClick = { viewModel.testNotification() },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Probar Notificaciones")
+                }
+            }
+        }
+
+        SettingsSection(title = "Servicio de Sincronización") {
+            Text(
+                text = "Mantiene la app sincronizada en segundo plano",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedButton(
+                    onClick = { viewModel.startForegroundService() },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Iniciar")
+                }
+                Button(
+                    onClick = { viewModel.stopForegroundService() },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Detener")
+                }
             }
         }
 
@@ -251,4 +287,3 @@ private fun SwitchPreference(
         Switch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }
-

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.flowup.data.local.ActivityEntity
 import com.app.flowup.data.repository.ActivityRepository
+import com.app.flowup.notifications.NotificationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class EditActivityViewModel @Inject constructor(
     private val repository: ActivityRepository,
+    private val notificationManager: NotificationManager,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -130,6 +132,13 @@ class EditActivityViewModel @Inject constructor(
                 )
 
                 repository.updateActivity(updatedActivity)
+
+                // Cancelar notificación anterior y programar nueva si corresponde
+                notificationManager.cancelReminder(activityId)
+                if (state.reminderDaysBefore != null && state.reminderDaysBefore > 0) {
+                    notificationManager.scheduleReminder(updatedActivity, state.reminderDaysBefore)
+                }
+
                 _uiState.update { it.copy(isSaved = true, isSaving = false) }
             } catch (e: Exception) {
                 _uiState.update {
