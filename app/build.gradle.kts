@@ -82,6 +82,11 @@ dependencies {
     // DataStore (Preferences)
     implementation(libs.androidx.datastore.preferences)
 
+    // WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.hilt.work)
+    kapt(libs.androidx.hilt.work)
+
     // Glance
     implementation(libs.androidx.glance)
     implementation(libs.androidx.glance.appwidget)
