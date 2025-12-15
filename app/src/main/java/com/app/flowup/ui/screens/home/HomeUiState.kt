@@ -1,4 +1,4 @@
-package com.app.flowup.ui.home
+package com.app.flowup.ui.screens.home
 
 import com.app.flowup.data.local.ActivityEntity
 

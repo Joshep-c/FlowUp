@@ -1,4 +1,4 @@
-package com.app.flowup.ui.home
+package com.app.flowup.ui.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
