@@ -88,13 +88,23 @@ class NotificationManager @Inject constructor(
         }
     }
 
-    // Programa un recordatorio para una actividad.
-
+    /**
+     * Programa un recordatorio para una actividad.
+     * Si el tiempo de recordatorio ya pasó, muestra la notificación inmediatamente.
+     */
     fun scheduleReminder(activity: ActivityEntity, daysNotice: Int) {
         val reminderTime = activity.dueDate - TimeUnit.DAYS.toMillis(daysNotice.toLong())
         val currentTime = System.currentTimeMillis()
 
-        if (reminderTime <= currentTime) return
+        // Si el tiempo de recordatorio ya pasó, mostrar notificación AHORA
+        if (reminderTime <= currentTime) {
+            showNotification(
+                activityId = activity.id,
+                title = "Recordatorio: ${activity.title}",
+                message = activity.description.ifEmpty { "Tienes una actividad pendiente" }
+            )
+            return
+        }
 
         val delay = reminderTime - currentTime
 
@@ -111,6 +121,18 @@ class NotificationManager @Inject constructor(
             "reminder_${activity.id}",
             ExistingWorkPolicy.REPLACE,
             workRequest
+        )
+    }
+
+    /**
+     * Función de prueba: muestra notificación de prueba inmediata.
+     * Útil para verificar que los permisos funcionan.
+     */
+    fun showTestNotification() {
+        showNotification(
+            activityId = 9999L,
+            title = "Prueba de Notificaciones",
+            message = "Si ves esto, las notificaciones funcionan correctamente"
         )
     }
 
