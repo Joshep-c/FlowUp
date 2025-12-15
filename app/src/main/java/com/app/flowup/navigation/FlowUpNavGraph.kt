@@ -9,6 +9,7 @@ import androidx.navigation.navArgument
 import com.app.flowup.ui.screens.addactivity.AddActivityScreen
 import com.app.flowup.ui.screens.editactivity.EditActivityScreen
 import com.app.flowup.ui.screens.home.HomeScreen
+import com.app.flowup.ui.screens.settings.SettingsScreen
 
 /**
  * Grafo de navegación de la aplicación.
@@ -35,6 +36,9 @@ fun FlowUpNavGraph(
                     navController.navigate(NavRoutes.ADD_ACTIVITY)
                 },
                 onNavigateToEditActivity = { activityId ->
+                },
+                onNavigateToSettings = {
+                    navController.navigate(NavRoutes.SETTINGS)
                     navController.navigate(NavRoutes.editActivity(activityId))
                 }
             )
@@ -64,6 +68,16 @@ fun FlowUpNavGraph(
             EditActivityScreen(
                 activityId = activityId,
                 onNavigateBack = {
+
+        // PANTALLA DE CONFIGURACIÓN
+
+        composable(route = NavRoutes.SETTINGS) {
+            SettingsScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
                     navController.popBackStack()
                 }
             )

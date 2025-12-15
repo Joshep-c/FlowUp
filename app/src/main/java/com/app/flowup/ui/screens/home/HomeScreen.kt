@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,6 +24,7 @@ import com.app.flowup.ui.components.ActivityCard
  *
  * @param onNavigateToAddActivity Callback para navegar a la pantalla de agregar
  * @param onNavigateToEditActivity Callback para navegar a la pantalla de editar
+ * @param onNavigateToSettings Callback para navegar a configuración
  * @param viewModel ViewModel inyectado por Hilt
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,6 +32,7 @@ import com.app.flowup.ui.components.ActivityCard
 fun HomeScreen(
     onNavigateToAddActivity: () -> Unit,
     onNavigateToEditActivity: (Long) -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -37,7 +40,7 @@ fun HomeScreen(
 
     // Estructura principal
     Scaffold(
-        topBar = { ScreenTopBar() },
+        topBar = { ScreenTopBar(onNavigateToSettings = onNavigateToSettings) },
         floatingActionButton = {
             AddActivityFab(onClick = onNavigateToAddActivity)
         },
@@ -55,13 +58,21 @@ fun HomeScreen(
 }
 
 // 2. ESTRUCTURA PRINCIPAL (Layout)
-
+private fun ScreenTopBar(onNavigateToSettings: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ScreenTopBar() {
     TopAppBar(
         title = { Text("FlowUp") },
-        colors = TopAppBarDefaults.topAppBarColors(
+        ),
+        actions = {
+            IconButton(onClick = onNavigateToSettings) {
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "Configuración"
+                )
+            }
+        }
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
         )

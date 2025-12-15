@@ -79,6 +79,9 @@ dependencies {
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
+    // DataStore (Preferences)
+    implementation(libs.androidx.datastore.preferences)
+
     // Glance
     implementation(libs.androidx.glance)
     implementation(libs.androidx.glance.appwidget)

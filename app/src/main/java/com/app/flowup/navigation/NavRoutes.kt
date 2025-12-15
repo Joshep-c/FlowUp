@@ -17,6 +17,10 @@ object NavRoutes {
 
     const val EDIT_ACTIVITY = "edit_activity/{activityId}"
 
+    // Ruta de la pantalla de configuración
+
+    const val SETTINGS = "settings"
+
     // Función helper para construir la ruta de edición con el ID
 
     fun editActivity(activityId: Long): String {
