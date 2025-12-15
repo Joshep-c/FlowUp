@@ -109,6 +109,13 @@ private fun SettingsContent(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedButton(
+                    onClick = { viewModel.testNotification() },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Probar Notificaciones")
+                }
             }
         }
 

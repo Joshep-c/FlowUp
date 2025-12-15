@@ -3,6 +3,7 @@ package com.app.flowup.ui.screens.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.flowup.data.preferences.PreferencesRepository
+import com.app.flowup.notifications.NotificationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val preferencesRepository: PreferencesRepository
+    private val preferencesRepository: PreferencesRepository,
+    private val notificationManager: NotificationManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
@@ -142,6 +144,18 @@ class SettingsViewModel @Inject constructor(
                 errorMessage = null,
                 successMessage = null
             )
+        }
+    }
+
+    /**
+     * Muestra una notificación de prueba para verificar permisos.
+     */
+    fun testNotification() {
+        if (notificationManager.hasPermission()) {
+            notificationManager.showTestNotification()
+            showSuccessMessage("Notificación enviada")
+        } else {
+            showErrorMessage("Permiso de notificaciones no concedido")
         }
     }
 
