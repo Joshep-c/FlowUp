@@ -31,10 +31,9 @@ class HomeViewModel @Inject constructor(
         loadActivities()
     }
 
-    /**
-     * Carga las actividades desde el Repository.
-     * Observa el Flow de Room para actualizaciones automáticas.
-     */
+    // Carga las actividades desde el Repository.
+    // Observa el Flow de Room para actualizaciones automáticas.
+
     private fun loadActivities() {
         viewModelScope.launch {
             repository.getPendingActivities()
@@ -80,9 +79,8 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Recarga manualmente las actividades (útil para pull-to-refresh).
-     */
+    // Recarga manualmente las actividades (útil para pull-to-refresh).
+
     fun refreshActivities() {
         _uiState.value = HomeUiState.Loading
         loadActivities()

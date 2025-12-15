@@ -1,11 +1,7 @@
 package com.app.flowup.navigation
 
-/**
- * Constantes de rutas de navegación de la aplicación.
- *
- * Centraliza todas las rutas para facilitar su mantenimiento
- * y evitar errores de tipeo.
- */
+// Constantes de rutas de navegación de la aplicación.
+
 object NavRoutes {
 
     // Ruta de la pantalla principal (lista de actividades)

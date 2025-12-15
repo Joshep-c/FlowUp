@@ -15,21 +15,21 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.flowup.data.local.ActivityEntity
 import com.app.flowup.ui.components.ActivityCard
 
-// ========================================
 // 1. COMPOSABLE PÚBLICO (Entry Point)
-// ========================================
 
 /**
  * Pantalla principal que muestra la lista de actividades.
  * Entry point de la pantalla, gestiona navegación y ViewModel.
  *
  * @param onNavigateToAddActivity Callback para navegar a la pantalla de agregar
+ * @param onNavigateToEditActivity Callback para navegar a la pantalla de editar
  * @param viewModel ViewModel inyectado por Hilt
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onNavigateToAddActivity: () -> Unit,
+    onNavigateToEditActivity: (Long) -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -47,15 +47,14 @@ fun HomeScreen(
             uiState = uiState,
             onToggleCompletion = viewModel::toggleActivityCompletion,
             onDeleteActivity = viewModel::deleteActivity,
+            onEditActivity = onNavigateToEditActivity,
             onRetry = viewModel::refreshActivities,
             modifier = Modifier.padding(paddingValues)
         )
     }
 }
 
-// ========================================
 // 2. ESTRUCTURA PRINCIPAL (Layout)
-// ========================================
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,6 +86,7 @@ private fun ScreenContent(
     uiState: HomeUiState,
     onToggleCompletion: (ActivityEntity) -> Unit,
     onDeleteActivity: (ActivityEntity) -> Unit,
+    onEditActivity: (Long) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -101,7 +101,8 @@ private fun ScreenContent(
                 pendingActivities = uiState.pendingActivities,
                 completedActivities = uiState.completedActivities,
                 onToggleCompletion = onToggleCompletion,
-                onDeleteActivity = onDeleteActivity
+                onDeleteActivity = onDeleteActivity,
+                onEditActivity = onEditActivity
             )
             is HomeUiState.Error -> ErrorState(
                 message = uiState.message,
@@ -111,16 +112,15 @@ private fun ScreenContent(
     }
 }
 
-// ========================================
 // 3. LISTA DE ACTIVIDADES
-// ========================================
 
 @Composable
 private fun ActivitiesContent(
     pendingActivities: List<ActivityEntity>,
     completedActivities: List<ActivityEntity>,
     onToggleCompletion: (ActivityEntity) -> Unit,
-    onDeleteActivity: (ActivityEntity) -> Unit
+    onDeleteActivity: (ActivityEntity) -> Unit,
+    onEditActivity: (Long) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -143,7 +143,8 @@ private fun ActivitiesContent(
                 ActivityCard(
                     activity = activity,
                     onToggleCompletion = { onToggleCompletion(activity) },
-                    onDelete = { onDeleteActivity(activity) }
+                    onDelete = { onDeleteActivity(activity) },
+                    onEdit = { onEditActivity(activity.id) }
                 )
             }
         }
@@ -165,7 +166,8 @@ private fun ActivitiesContent(
                 ActivityCard(
                     activity = activity,
                     onToggleCompletion = { onToggleCompletion(activity) },
-                    onDelete = { onDeleteActivity(activity) }
+                    onDelete = { onDeleteActivity(activity) },
+                    onEdit = { onEditActivity(activity.id) }
                 )
             }
         }
@@ -197,9 +199,7 @@ private fun SectionHeader(
     }
 }
 
-// ========================================
 // 4. ESTADOS (Loading/Empty/Error)
-// ========================================
 
 @Composable
 private fun LoadingState() {

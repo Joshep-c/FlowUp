@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
@@ -39,6 +40,7 @@ import java.util.Locale
  *
  * @param activity La actividad a mostrar
  * @param onToggleCompletion Callback cuando se marca/desmarca como completada
+ * @param onEdit Callback cuando se edita la actividad
  * @param onDelete Callback cuando se elimina la actividad
  */
 @OptIn(ExperimentalLayoutApi::class)
@@ -46,6 +48,7 @@ import java.util.Locale
 fun ActivityCard(
     activity: ActivityEntity,
     onToggleCompletion: (ActivityEntity) -> Unit,
+    onEdit: () -> Unit = {},
     onDelete: (ActivityEntity) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -102,7 +105,7 @@ fun ActivityCard(
 
                 // Fecha de vencimiento
                 Text(
-                    text = "📅 ${formatDate(activity.dueDate)}",
+                    text = "${formatDate(activity.dueDate)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -149,52 +152,66 @@ fun ActivityCard(
             }
 
             Spacer(modifier = Modifier.width(8.dp))
-
-            // Botón de eliminar
-            IconButton(
-                onClick = { onDelete(activity) },
-                modifier = Modifier.padding(top = 4.dp)
+            // Botones de acción (Editar y Eliminar)
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Eliminar actividad",
-                    tint = MaterialTheme.colorScheme.error
-                )
+                // Botón de editar (solo para actividades pendientes)
+                if (!activity.isCompleted) {
+                    IconButton(
+                        onClick = onEdit,
+                        modifier = Modifier.padding(top = 4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Editar actividad",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+
+                // Botón de eliminar
+                IconButton(
+                    onClick = { onDelete(activity) },
+                    modifier = Modifier.padding(top = 4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Eliminar actividad",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
+
             }
         }
     }
 }
 
-// ========================================
 // FUNCIONES HELPER
-// ========================================
 
-/**
- * Formatea la fecha para mostrar de forma legible.
- */
+// Formatea la fecha para mostrar de forma legible.
+
 private fun formatDate(timestamp: Long): String {
     val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     return sdf.format(timestamp)
 }
 
-/**
- * Obtiene la etiqueta visual de la categoría.
- */
+// Obtiene la etiqueta visual de la categoría.
+
 @Composable
 private fun getCategoryLabel(category: String): String {
     return when (category.uppercase()) {
-        "WORK" -> "💼 Trabajo"
-        "PERSONAL" -> "👤 Personal"
-        "HEALTH" -> "💪 Salud"
-        "STUDY" -> "📚 Estudio"
-        "OTHER" -> "📌 Otro"
+        "WORK" -> "Trabajo"
+        "PERSONAL" -> "Personal"
+        "HEALTH" -> "Salud"
+        "STUDY" -> "Estudio"
+        "OTHER" -> "Otro"
         else -> category
     }
 }
 
-/**
- * Obtiene el color de fondo para la categoría.
- */
+// Obtiene el color de fondo para la categoría.
+
 @Composable
 private fun getCategoryColor(category: String) = when (category.uppercase()) {
     "WORK" -> MaterialTheme.colorScheme.primaryContainer
@@ -204,9 +221,8 @@ private fun getCategoryColor(category: String) = when (category.uppercase()) {
     else -> MaterialTheme.colorScheme.surfaceVariant
 }
 
-/**
- * Obtiene la etiqueta visual de la prioridad.
- */
+// Obtiene la etiqueta visual de la prioridad.
+
 @Composable
 private fun getPriorityLabel(priority: String): String {
     return when (priority.uppercase()) {
@@ -217,9 +233,8 @@ private fun getPriorityLabel(priority: String): String {
     }
 }
 
-/**
- * Obtiene el color de fondo para la prioridad.
- */
+// Obtiene el color de fondo para la prioridad.
+
 @Composable
 private fun getPriorityColor(priority: String) = when (priority.uppercase()) {
     "HIGH" -> MaterialTheme.colorScheme.errorContainer

@@ -2,9 +2,12 @@ package com.app.flowup.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.app.flowup.ui.screens.addactivity.AddActivityScreen
+import com.app.flowup.ui.screens.editactivity.EditActivityScreen
 import com.app.flowup.ui.screens.home.HomeScreen
 
 /**
@@ -30,6 +33,9 @@ fun FlowUpNavGraph(
             HomeScreen(
                 onNavigateToAddActivity = {
                     navController.navigate(NavRoutes.ADD_ACTIVITY)
+                },
+                onNavigateToEditActivity = { activityId ->
+                    navController.navigate(NavRoutes.editActivity(activityId))
                 }
             )
         }
@@ -44,10 +50,8 @@ fun FlowUpNavGraph(
             )
         }
 
-        // PANTALLA EDITAR ACTIVIDAD (FUTURA)
+        // PANTALLA EDITAR ACTIVIDAD
 
-        // TODO: Implementar cuando se requiera funcionalidad de edición
-        /*
         composable(
             route = NavRoutes.EDIT_ACTIVITY,
             arguments = listOf(
@@ -56,7 +60,7 @@ fun FlowUpNavGraph(
                 }
             )
         ) { backStackEntry ->
-            val activityId = backStackEntry.arguments?.getLong("activityId") ?: return@composable
+            val activityId = backStackEntry.arguments?.getLong("activityId") ?: 0L
             EditActivityScreen(
                 activityId = activityId,
                 onNavigateBack = {
@@ -64,7 +68,6 @@ fun FlowUpNavGraph(
                 }
             )
         }
-        */
     }
 }
 
