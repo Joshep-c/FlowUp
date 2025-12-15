@@ -23,9 +23,9 @@ fun FlowUpNavGraph(
         navController = navController,
         startDestination = startDestination
     ) {
-        // ==========================================
+
         // PANTALLA PRINCIPAL (HOME)
-        // ==========================================
+
         composable(route = NavRoutes.HOME) {
             HomeScreen(
                 onNavigateToAddActivity = {
@@ -34,9 +34,8 @@ fun FlowUpNavGraph(
             )
         }
 
-        // ==========================================
         // PANTALLA AGREGAR ACTIVIDAD
-        // ==========================================
+
         composable(route = NavRoutes.ADD_ACTIVITY) {
             AddActivityScreen(
                 onNavigateBack = {
@@ -45,9 +44,8 @@ fun FlowUpNavGraph(
             )
         }
 
-        // ==========================================
         // PANTALLA EDITAR ACTIVIDAD (FUTURA)
-        // ==========================================
+
         // TODO: Implementar cuando se requiera funcionalidad de edición
         /*
         composable(

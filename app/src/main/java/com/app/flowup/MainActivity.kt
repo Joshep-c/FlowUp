@@ -18,7 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
  *
  * @AndroidEntryPoint: Permite que Hilt inyecte dependencias en esta Activity
  *
- * Esta Activity sirve como contenedor principal para:
+ * Para:
  * - El tema de la aplicación (FlowUpTheme)
  * - El sistema de navegación (NavController + NavGraph)
  * - La configuración Edge-to-Edge

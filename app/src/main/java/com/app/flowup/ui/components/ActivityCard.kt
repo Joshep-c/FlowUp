@@ -2,14 +2,20 @@ package com.app.flowup.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -29,12 +35,13 @@ import java.util.Locale
 
 /**
  * Componente reutilizable para mostrar una actividad individual.
+ * Muestra toda la información de la actividad incluyendo categoría, prioridad y recordatorio.
  *
  * @param activity La actividad a mostrar
  * @param onToggleCompletion Callback cuando se marca/desmarca como completada
  * @param onDelete Callback cuando se elimina la actividad
  */
-
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ActivityCard(
     activity: ActivityEntity,
@@ -51,12 +58,13 @@ fun ActivityCard(
                 .fillMaxWidth()
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Top
         ) {
             // Checkbox para marcar como completada
             Checkbox(
                 checked = activity.isCompleted,
-                onCheckedChange = { onToggleCompletion(activity) }
+                onCheckedChange = { onToggleCompletion(activity) },
+                modifier = Modifier.padding(top = 4.dp)
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -65,6 +73,7 @@ fun ActivityCard(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
+                // Título
                 Text(
                     text = activity.title,
                     style = MaterialTheme.typography.titleMedium,
@@ -73,10 +82,11 @@ fun ActivityCard(
                     } else {
                         TextDecoration.None
                     },
-                    maxLines = 1,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
 
+                // Descripción
                 if (activity.description.isNotBlank()) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
@@ -88,18 +98,63 @@ fun ActivityCard(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Fecha de vencimiento
                 Text(
-                    text = formatDate(activity.dueDate),
+                    text = "📅 ${formatDate(activity.dueDate)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+
+                // Chips de categoría, prioridad y recordatorio
+                Spacer(modifier = Modifier.height(8.dp))
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    // Chip de categoría
+                    AssistChip(
+                        onClick = { },
+                        label = { Text(getCategoryLabel(activity.category)) },
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = getCategoryColor(activity.category)
+                        )
+                    )
+
+                    // Chip de prioridad
+                    AssistChip(
+                        onClick = { },
+                        label = { Text(getPriorityLabel(activity.priority)) },
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = getPriorityColor(activity.priority)
+                        )
+                    )
+
+                    // Chip de recordatorio (si existe)
+                    activity.reminderDaysBefore?.let { days ->
+                        AssistChip(
+                            onClick = { },
+                            label = { Text("$days día${if (days > 1) "s" else ""} antes") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Notifications,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        )
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.width(8.dp))
 
             // Botón de eliminar
-            IconButton(onClick = { onDelete(activity) }) {
+            IconButton(
+                onClick = { onDelete(activity) },
+                modifier = Modifier.padding(top = 4.dp)
+            ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Eliminar actividad",
@@ -110,9 +165,65 @@ fun ActivityCard(
     }
 }
 
-// Formatea la fecha para mostrar de forma legible.
+// ========================================
+// FUNCIONES HELPER
+// ========================================
 
+/**
+ * Formatea la fecha para mostrar de forma legible.
+ */
 private fun formatDate(timestamp: Long): String {
-    val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+    val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     return sdf.format(timestamp)
+}
+
+/**
+ * Obtiene la etiqueta visual de la categoría.
+ */
+@Composable
+private fun getCategoryLabel(category: String): String {
+    return when (category.uppercase()) {
+        "WORK" -> "💼 Trabajo"
+        "PERSONAL" -> "👤 Personal"
+        "HEALTH" -> "💪 Salud"
+        "STUDY" -> "📚 Estudio"
+        "OTHER" -> "📌 Otro"
+        else -> category
+    }
+}
+
+/**
+ * Obtiene el color de fondo para la categoría.
+ */
+@Composable
+private fun getCategoryColor(category: String) = when (category.uppercase()) {
+    "WORK" -> MaterialTheme.colorScheme.primaryContainer
+    "PERSONAL" -> MaterialTheme.colorScheme.secondaryContainer
+    "HEALTH" -> MaterialTheme.colorScheme.tertiaryContainer
+    "STUDY" -> MaterialTheme.colorScheme.surfaceVariant
+    else -> MaterialTheme.colorScheme.surfaceVariant
+}
+
+/**
+ * Obtiene la etiqueta visual de la prioridad.
+ */
+@Composable
+private fun getPriorityLabel(priority: String): String {
+    return when (priority.uppercase()) {
+        "HIGH" -> "🔴 Alta"
+        "MEDIUM" -> "🟡 Media"
+        "LOW" -> "🟢 Baja"
+        else -> priority
+    }
+}
+
+/**
+ * Obtiene el color de fondo para la prioridad.
+ */
+@Composable
+private fun getPriorityColor(priority: String) = when (priority.uppercase()) {
+    "HIGH" -> MaterialTheme.colorScheme.errorContainer
+    "MEDIUM" -> MaterialTheme.colorScheme.tertiaryContainer
+    "LOW" -> MaterialTheme.colorScheme.surfaceVariant
+    else -> MaterialTheme.colorScheme.surfaceVariant
 }
