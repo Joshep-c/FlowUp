@@ -5,6 +5,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,6 +25,7 @@ import com.app.flowup.ui.components.ActivityCard
  * Entry point de la pantalla, gestiona navegación y ViewModel.
  *
  * @param onNavigateToAddActivity Callback para navegar a la pantalla de agregar
+ * @param onNavigateToCompleted Callback para navegar a actividades completadas
  * @param onNavigateToEditActivity Callback para navegar a la pantalla de editar
  * @param onNavigateToSettings Callback para navegar a configuración
  * @param viewModel ViewModel inyectado por Hilt
@@ -31,6 +34,7 @@ import com.app.flowup.ui.components.ActivityCard
 @Composable
 fun HomeScreen(
     onNavigateToAddActivity: () -> Unit,
+    onNavigateToCompleted: () -> Unit = {},
     onNavigateToEditActivity: (Long) -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel()
@@ -40,7 +44,12 @@ fun HomeScreen(
 
     // Estructura principal
     Scaffold(
-        topBar = { ScreenTopBar(onNavigateToSettings = onNavigateToSettings) },
+        topBar = {
+            ScreenTopBar(
+                onNavigateToSettings = onNavigateToSettings,
+                onNavigateToCompleted = onNavigateToCompleted
+            )
+        },
         floatingActionButton = {
             AddActivityFab(onClick = onNavigateToAddActivity)
         },
@@ -61,7 +70,12 @@ fun HomeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ScreenTopBar(onNavigateToSettings: () -> Unit) {
+private fun ScreenTopBar(
+    onNavigateToSettings: () -> Unit,
+    onNavigateToCompleted: () -> Unit
+) {
+    var showMenu by remember { mutableStateOf(false) }
+
     TopAppBar(
         title = { Text("FlowUp") },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -69,10 +83,44 @@ private fun ScreenTopBar(onNavigateToSettings: () -> Unit) {
             titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
         actions = {
-            IconButton(onClick = onNavigateToSettings) {
+            // Botón de menú
+            IconButton(onClick = { showMenu = true }) {
                 Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = "Configuración"
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "Menú"
+                )
+            }
+
+            // Menú desplegable
+            DropdownMenu(
+                expanded = showMenu,
+                onDismissRequest = { showMenu = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Ver completadas") },
+                    onClick = {
+                        showMenu = false
+                        onNavigateToCompleted()
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = null
+                        )
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Configuración") },
+                    onClick = {
+                        showMenu = false
+                        onNavigateToSettings()
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = null
+                        )
+                    }
                 )
             }
         }
@@ -142,8 +190,7 @@ private fun ActivitiesContent(
         if (pendingActivities.isNotEmpty()) {
             item {
                 SectionHeader(
-                    title = "Pendientes (${pendingActivities.size})",
-                    emoji = "📋"
+                    title = "Pendientes (${pendingActivities.size})"
                 )
             }
 
@@ -165,8 +212,7 @@ private fun ActivitiesContent(
             item {
                 Spacer(modifier = Modifier.height(8.dp))
                 SectionHeader(
-                    title = "Completadas (${completedActivities.size})",
-                    emoji = "✅"
+                    title = "Completadas (${completedActivities.size})"
                 )
             }
 
@@ -188,7 +234,6 @@ private fun ActivitiesContent(
 @Composable
 private fun SectionHeader(
     title: String,
-    emoji: String,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -197,11 +242,6 @@ private fun SectionHeader(
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = emoji,
-            style = MaterialTheme.typography.titleLarge
-        )
-        Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = title,
             style = MaterialTheme.typography.titleLarge,
@@ -236,11 +276,6 @@ private fun EmptyState() {
         modifier = Modifier.padding(32.dp)
     ) {
         Text(
-            text = "📋",
-            style = MaterialTheme.typography.displayLarge
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
             text = "No hay actividades",
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center
@@ -266,11 +301,6 @@ private fun ErrorState(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = "⚠️",
-            style = MaterialTheme.typography.displayLarge
-        )
-        Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = "Error al cargar",
             style = MaterialTheme.typography.headlineMedium,

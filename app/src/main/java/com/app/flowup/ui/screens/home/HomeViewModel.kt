@@ -3,12 +3,14 @@ package com.app.flowup.ui.screens.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.flowup.data.local.ActivityEntity
+import com.app.flowup.data.preferences.PreferencesRepository
 import com.app.flowup.data.repository.ActivityRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,7 +20,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: ActivityRepository
+    private val repository: ActivityRepository,
+    private val preferencesRepository: PreferencesRepository
 ) : ViewModel() {
 
     // Estado privado mutable (solo el ViewModel puede modificarlo)
@@ -31,26 +34,40 @@ class HomeViewModel @Inject constructor(
         loadActivities()
     }
 
-    // Carga las actividades desde el Repository.
-    // Observa el Flow de Room para actualizaciones automáticas.
-
+    /**
+     * Carga las actividades desde el Repository.
+     * Observa el Flow de Room y las preferencias para actualizaciones automáticas.
+     * Filtra las completadas según la preferencia del usuario.
+     */
     private fun loadActivities() {
         viewModelScope.launch {
-            repository.getPendingActivities()
+            combine(
+                repository.getPendingActivities(),
+                preferencesRepository.showCompleted
+            ) { activities, showCompleted ->
+                Pair(activities, showCompleted)
+            }
                 .catch { exception ->
                     // Captura errores de Room y los convierte en estado Error
                     _uiState.value = HomeUiState.Error(
                         exception.message ?: "Error desconocido al cargar actividades"
                     )
                 }
-                .collect { activities ->
+                .collect { (activities, showCompleted) ->
+                    val pendingActivities = activities.filter { !it.isCompleted }
+                    val completedActivities = if (showCompleted) {
+                        activities.filter { it.isCompleted }
+                    } else {
+                        emptyList() // No mostrar completadas si está desactivado
+                    }
+
                     // Actualiza el estado según si hay actividades o no
-                    _uiState.value = if (activities.isEmpty()) {
+                    _uiState.value = if (pendingActivities.isEmpty() && completedActivities.isEmpty()) {
                         HomeUiState.Empty
                     } else {
                         HomeUiState.Success(
-                            pendingActivities = activities.filter { !it.isCompleted },
-                            completedActivities = activities.filter { it.isCompleted }
+                            pendingActivities = pendingActivities,
+                            completedActivities = completedActivities
                         )
                     }
                 }

@@ -16,19 +16,23 @@ interface ActivityDao {
     @Query("SELECT * FROM activities WHERE isCompleted = 0 ORDER BY dueDate ASC")
     fun getPendingActivities(): Flow<List<ActivityEntity>>
 
-    // 2. Insertar nueva actividad
+    // 2. Obtener actividades completadas ordenadas por fecha
+    @Query("SELECT * FROM activities WHERE isCompleted = 1 ORDER BY dueDate DESC")
+    fun getCompletedActivities(): Flow<List<ActivityEntity>>
+
+    // 3. Insertar nueva actividad
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertActivity(activity: ActivityEntity)
 
-    // 3. Modificar actividad
+    // 4. Modificar actividad
     @Update
     suspend fun updateActivity(activity: ActivityEntity)
 
-    // 4. Eliminar actividad
+    // 5. Eliminar actividad
     @Delete
     suspend fun deleteActivity(activity: ActivityEntity)
 
-    // 5. Obtener una por ID (útil para cuando entres a la pantalla de "Editar")
+    // 6. Obtener una por ID (útil para cuando entres a la pantalla de "Editar")
     @Query("SELECT * FROM activities WHERE id = :id")
     suspend fun getActivityById(id: Long): ActivityEntity?
 }
