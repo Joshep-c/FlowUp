@@ -240,7 +240,7 @@ private fun PrioritySelector(
     selectedPriority: String,
     onPrioritySelected: (String) -> Unit
 ) {
-mos,    Column {
+    Column {
         Text(
             text = "Prioridad",
             style = MaterialTheme.typography.labelMedium,

@@ -1,7 +1,6 @@
 package com.app.flowup
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -9,7 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.app.flowup.ui.screens.home.HomeScreen
+import androidx.navigation.compose.rememberNavController
+import com.app.flowup.navigation.FlowUpNavGraph
 import com.app.flowup.ui.theme.FlowUpTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -17,6 +17,11 @@ import dagger.hilt.android.AndroidEntryPoint
  * Activity principal de la aplicación.
  *
  * @AndroidEntryPoint: Permite que Hilt inyecte dependencias en esta Activity
+ *
+ * Esta Activity sirve como contenedor principal para:
+ * - El tema de la aplicación (FlowUpTheme)
+ * - El sistema de navegación (NavController + NavGraph)
+ * - La configuración Edge-to-Edge
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -30,16 +35,11 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    HomeScreen(
-                        onNavigateToAddActivity = {
-                            // TODO: Implementar navegación completa con Navigation Compose
-                            Toast.makeText(
-                                this,
-                                "Navegación a AddActivity próximamente",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    )
+                    // Controlador de navegación
+                    val navController = rememberNavController()
+
+                    // Grafo de navegación con todas las pantallas
+                    FlowUpNavGraph(navController = navController)
                 }
             }
         }
