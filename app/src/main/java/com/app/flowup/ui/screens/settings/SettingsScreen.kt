@@ -119,6 +119,35 @@ private fun SettingsContent(
             }
         }
 
+        SettingsSection(title = "Servicio de Sincronización") {
+            Text(
+                text = "Mantiene la app sincronizada en segundo plano",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedButton(
+                    onClick = { viewModel.startForegroundService() },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Iniciar")
+                }
+                Button(
+                    onClick = { viewModel.stopForegroundService() },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Detener")
+                }
+            }
+        }
+
         SettingsSection(title = "Avanzado") {
             SwitchPreference(
                 title = "Auto-eliminar completadas después de 7 días",
@@ -258,4 +287,3 @@ private fun SwitchPreference(
         Switch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }
-
