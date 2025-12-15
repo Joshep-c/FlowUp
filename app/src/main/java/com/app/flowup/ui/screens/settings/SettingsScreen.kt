@@ -88,20 +88,10 @@ private fun SettingsContent(
         }
 
         SettingsSection(title = "Vista Predeterminada") {
-            ViewFilterSelector(
-                currentView = preferences.defaultView,
-                onViewSelected = viewModel::setDefaultView
-            )
             Spacer(modifier = Modifier.height(8.dp))
             SortOrderSelector(
                 currentOrder = preferences.sortOrder,
                 onOrderSelected = viewModel::setSortOrder
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            SwitchPreference(
-                title = "Mostrar actividades completadas",
-                checked = preferences.showCompleted,
-                onCheckedChange = viewModel::setShowCompleted
             )
         }
 
@@ -124,8 +114,8 @@ private fun SettingsContent(
 
         SettingsSection(title = "Avanzado") {
             SwitchPreference(
-                title = "Auto-eliminar completadas",
-                subtitle = "Elimina automáticamente actividades completadas después de 7 días",
+                title = "Auto-eliminar completadas después de 7 días",
+                subtitle = "Por defecto, las tareas completadas se eliminan automáticamente después de 7 días. Desactiva esta opción para mantenerlas indefinidamente.",
                 checked = preferences.autoDeleteCompleted,
                 onCheckedChange = viewModel::setAutoDeleteCompleted
             )
@@ -176,6 +166,7 @@ private fun SettingsSection(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ThemeSelector(
     currentTheme: String,
@@ -187,7 +178,11 @@ private fun ThemeSelector(
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
             listOf("LIGHT" to "Claro", "DARK" to "Oscuro", "SYSTEM" to "Sistema").forEach { (value, label) ->
                 FilterChip(
                     selected = currentTheme == value,
@@ -199,29 +194,7 @@ private fun ThemeSelector(
     }
 }
 
-@Composable
-private fun ViewFilterSelector(
-    currentView: String,
-    onViewSelected: (String) -> Unit
-) {
-    Column {
-        Text(
-            text = "Filtro de vista",
-            style = MaterialTheme.typography.labelMedium,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            listOf("ALL" to "Todas", "PENDING" to "Pendientes", "COMPLETED" to "Completadas").forEach { (value, label) ->
-                FilterChip(
-                    selected = currentView == value,
-                    onClick = { onViewSelected(value) },
-                    label = { Text(label) }
-                )
-            }
-        }
-    }
-}
-
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SortOrderSelector(
     currentOrder: String,
@@ -233,8 +206,16 @@ private fun SortOrderSelector(
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            listOf("DATE_ASC" to "Fecha ↑", "DATE_DESC" to "Fecha ↓", "PRIORITY_HIGH_FIRST" to "Prioridad").forEach { (value, label) ->
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            listOf(
+                "DATE_ASC" to "Fecha Más Antiguas",
+                "DATE_DESC" to "Fecha Más Recientes",
+                "PRIORITY_HIGH_FIRST" to "Prioridad"
+            ).forEach { (value, label) ->
                 FilterChip(
                     selected = currentOrder == value,
                     onClick = { onOrderSelected(value) },

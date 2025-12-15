@@ -137,7 +137,7 @@ private fun ErrorContent(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "❌ Error",
+                text = "Error",
                 style = MaterialTheme.typography.headlineSmall
             )
             Text(

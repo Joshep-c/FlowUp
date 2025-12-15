@@ -27,6 +27,14 @@ class ActivityRepository @Inject constructor(
     }
 
     /**
+     * Obtiene todas las actividades completadas ordenadas por fecha.
+     * Retorna un Flow que se actualiza automáticamente cuando hay cambios en la BD.
+     */
+    fun getCompletedActivities(): Flow<List<ActivityEntity>> {
+        return activityDao.getCompletedActivities()
+    }
+
+    /**
      * Inserta una nueva actividad en la base de datos.
      */
     suspend fun insertActivity(activity: ActivityEntity) {

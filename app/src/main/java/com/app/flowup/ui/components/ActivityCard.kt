@@ -226,9 +226,9 @@ private fun getCategoryColor(category: String) = when (category.uppercase()) {
 @Composable
 private fun getPriorityLabel(priority: String): String {
     return when (priority.uppercase()) {
-        "HIGH" -> "🔴 Alta"
-        "MEDIUM" -> "🟡 Media"
-        "LOW" -> "🟢 Baja"
+        "HIGH" -> "Alta"
+        "MEDIUM" -> "Media"
+        "LOW" -> "Baja"
         else -> priority
     }
 }

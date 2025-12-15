@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.app.flowup.ui.screens.addactivity.AddActivityScreen
+import com.app.flowup.ui.screens.completed.CompletedActivitiesScreen
 import com.app.flowup.ui.screens.editactivity.EditActivityScreen
 import com.app.flowup.ui.screens.home.HomeScreen
 import com.app.flowup.ui.screens.settings.SettingsScreen
@@ -40,6 +41,9 @@ fun FlowUpNavGraph(
                 },
                 onNavigateToSettings = {
                     navController.navigate(NavRoutes.SETTINGS)
+                },
+                onNavigateToCompleted = {
+                    navController.navigate(NavRoutes.COMPLETED_ACTIVITIES)
                 }
             )
         }
@@ -82,6 +86,18 @@ fun FlowUpNavGraph(
                 }
             )
         }
+
+        // PANTALLA DE ACTIVIDADES COMPLETADAS
+
+        composable(route = NavRoutes.COMPLETED_ACTIVITIES) {
+            CompletedActivitiesScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
     }
 }
+
+
 

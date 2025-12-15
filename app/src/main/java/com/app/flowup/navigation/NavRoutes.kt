@@ -21,6 +21,10 @@ object NavRoutes {
 
     const val SETTINGS = "settings"
 
+    // Ruta de la pantalla de actividades completadas
+
+    const val COMPLETED_ACTIVITIES = "completed_activities"
+
     // Función helper para construir la ruta de edición con el ID
 
     fun editActivity(activityId: Long): String {
