@@ -1,13 +1,10 @@
 package com.app.flowup.ui.screens.settings
 
 import android.content.Context
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.flowup.data.preferences.PreferencesRepository
-import com.app.flowup.service.SyncForegroundService
 import com.app.flowup.notifications.NotificationManager
-import dagger.hilt.android.qualifiers.ApplicationContext
 import com.app.flowup.service.SyncForegroundService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -18,7 +15,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-    @ApplicationContext private val context: Context,
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
@@ -163,6 +159,10 @@ class SettingsViewModel @Inject constructor(
             notificationManager.showTestNotification()
             showSuccessMessage("Notificación enviada")
         } else {
+            showErrorMessage("Permiso de notificaciones no concedido")
+        }
+    }
+
     /**
      * Inicia el servicio en primer plano.
      */
@@ -187,14 +187,12 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-            showErrorMessage("Permiso de notificaciones no concedido")
-        }
-    }
-
     private fun showSuccessMessage(message: String) {
         _uiState.update { it.copy(successMessage = message) }
     }
 
+    private fun showErrorMessage(message: String) {
         _uiState.update { it.copy(errorMessage = message) }
     }
 }
+
