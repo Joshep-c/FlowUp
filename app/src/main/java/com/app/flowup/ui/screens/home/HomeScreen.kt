@@ -58,12 +58,15 @@ fun HomeScreen(
 }
 
 // 2. ESTRUCTURA PRINCIPAL (Layout)
-private fun ScreenTopBar(onNavigateToSettings: () -> Unit) {
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ScreenTopBar() {
+private fun ScreenTopBar(onNavigateToSettings: () -> Unit) {
     TopAppBar(
         title = { Text("FlowUp") },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
         actions = {
             IconButton(onClick = onNavigateToSettings) {
@@ -73,9 +76,6 @@ private fun ScreenTopBar() {
                 )
             }
         }
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-        )
     )
 }
 

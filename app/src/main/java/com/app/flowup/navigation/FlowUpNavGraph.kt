@@ -36,10 +36,10 @@ fun FlowUpNavGraph(
                     navController.navigate(NavRoutes.ADD_ACTIVITY)
                 },
                 onNavigateToEditActivity = { activityId ->
+                    navController.navigate(NavRoutes.editActivity(activityId))
                 },
                 onNavigateToSettings = {
                     navController.navigate(NavRoutes.SETTINGS)
-                    navController.navigate(NavRoutes.editActivity(activityId))
                 }
             )
         }
@@ -68,16 +68,16 @@ fun FlowUpNavGraph(
             EditActivityScreen(
                 activityId = activityId,
                 onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
 
         // PANTALLA DE CONFIGURACIÓN
 
         composable(route = NavRoutes.SETTINGS) {
             SettingsScreen(
                 onNavigateBack = {
-                    navController.popBackStack()
-                }
-            )
-        }
                     navController.popBackStack()
                 }
             )
